@@ -1,0 +1,3 @@
+Skeleton 5
+d9ad"TTTThree"ки0зр±еҐTicTacToe"aдҐTTTFour"€aдҐTTTFive"€ad"TTTSix"€Cad"TicTacToe_HvAB"jh2бдҐMaxie"кзр±€!зр±еҐHumanPlayer"aдҐMinnie"j€Б&зр±еҐABFour"зр±еҐReferee"ad"TicTacToe_HvMM"jh2б€Бкзр±€.€Б+б€Б=к€В=зр±еҐMMFour"€Вad"TicTacToe_HvH"jh2€В8a€Б=€В<€Вad"TicTacToe_HvJ"jh2€Бa€Б=j€Б&зр±еҐJamSix"€Вad"TicTacToe_M2vM4"jh2a€Бj€В=gp1e"MMTwo"€Г€ВCad"TicTacToe_M4vAB"jh2a€Бj€Б&€Гa€Б=j€Б&gp1e"ABSix"€Вad"TicTacToe_JvM4"jh2б€Бк€В=зр±еҐJamFour"€Г€Вad"TicTacToe_ABvAB"jh2a€Бк€В=зр±еҐABThree"a€Б=€З€Вad"TicTacToe_JvAB"jh2€Ж'a€Б=j€В=€В
+€Вad"TicTacToe_JvJ"jh2a€Бк€В=€Дa€Б=€И5€ВN

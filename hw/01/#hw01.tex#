@@ -1,0 +1,157 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage[margin=1in,headsep=.2in]{geometry}
+\usepackage{tikz}
+
+\setlength{\headheight}{13.6pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+
+\def\indented#1{\list{}{}\item[]}
+\let\indented=\endlist
+
+\newcounter{questionCounter}
+\newcounter{partCounter}[questionCounter]
+\newenvironment{question}[2][\arabic{questionCounter}]{%
+    \setcounter{partCounter}{0}%
+    \vspace{.25in} \hrule \vspace{0.5em}%
+        \noindent{\bf #2}%
+    \vspace{0.8em} \hrule \vspace{.10in}%
+    \addtocounter{questionCounter}{1}%
+}{}
+\renewenvironment{part}[1][\alph{partCounter}]{%
+    \addtocounter{partCounter}{1}%
+    \vspace{.10in}%
+    \begin{indented}%
+       {\bf (#1)} %
+}{\end{indented}}
+
+%%%%%%%%%%%%%%%%% Identifying Information %%%%%%%%%%%%%%%%%
+%% This is here, so that you can make your homework look %%
+%% pretty when you compile it.                           %%
+%%         DO NOT PUT YOUR NAME ANYWHERE ELSE!!!!        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\myclass}{15-150}
+\newcommand{\myname}{Jonathan Li}
+\newcommand{\myandrew}{jlli}
+\newcommand{\myhwname}{Assigment 1}
+\newcommand{\myrecitation}{S}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancyplain}
+\lhead{\fancyplain{}{\myname}}
+\chead{\fancyplain{}{\textbf{\myclass{} \myhwname}}}
+\rhead{\fancyplain{}{\myandrew}}
+
+\begin{document}
+\thispagestyle{plain}
+
+\begin{center}
+{\Large \myclass{} \myhwname} \\
+\myname \\
+\myandrew \\
+\myrecitation \\
+\today
+\end{center}
+
+
+\begin{question}{Task 2.1} %% Put the question title here %%
+  The pinned picture on the Piazza post is of a long-eared rabbit with
+  what seems like deer antlers on the top of its head.
+\end{question}
+
+\begin{question}{Task 2.2}
+\begin{enumerate}[1.]
+\item Jon and Yoni had a discussion about lecture content, which is
+    permitted by the collaboration policy. Since their discussion was
+    not about homework, the whiteboard policy doesn't need to be
+    applied.
+\item Jon and Michael took notes from their discussion about
+    homework, but they discarded them after the end of their
+    discussion. This is akin to a discussion at a whiteboard, where
+    neither of them would have been able to take home the content
+    written on the whiteboard, so this discussion is permitted by the
+    course collaboration policy, provided they each wrote the homework
+    four hours after the discussion and they cited each other in their
+    respective writeups.
+\item According to course policy, students are not allowed to search
+    the internet, libraries, or other external sources for homework
+    solutions, so Brandon's actions in looking up a functional
+    programming textbook for help on homework are not permitted.
+\item In this situation, even if Michael cited Brandon as a
+    collaborator on his homework writeup, since their `collaboration'
+    could not have taken place at a whiteboard (Michael just read
+    Brandon's notes), both are in violation of course policy. Michael
+    should not have read Brandon's work, and Brandon should have taken
+    care to safeguard his work.
+\item According to course policy, homeworks must not be derived in
+    part or whole from work of others. By looking at the staff
+    solution from a previous semester, Jon is deriving part of his
+    work from the work of others, and so his actions are not permitted
+    by course policy.
+\end{enumerate}
+\end{question}
+
+\newpage
+
+\begin{question}{Task 3.1}
+In the expression \begin{verbatim}(intToString 7) ^
+  (intToString 9)\end{verbatim}, the left hand side of the
+expression \begin{verbatim}(intToString 7)\end{verbatim} evaluates to
+the string `7', which has type string. The right hand side of the
+expression \begin{verbatim}(intToString 9)\end{verbatim} evaluates to
+the string `9', which also has type string. Since the left and right
+hand sides of the expression match the input types of the infix
+operator \begin{verbatim}^\end{verbatim}, the whole expression is
+well-typed and has the type of the infix operator's return type,
+string. More formally:
+\begin{enumerate}[(i)]
+  \item \begin{verbatim}intToString : int -> string\end{verbatim}
+  \item \begin{verbatim}7 : int\end{verbatim}
+  \item \begin{verbatim}(intToString 7) : string\end{verbatim} by
+  (APP)
+  \item \begin{verbatim}9 : int\end{verbatim}
+  \item \begin{verbatim}(intToString 9) : string\end{verbatim} by
+  (APP)
+  \item \begin{verbatim}^ : string * string -> string\end{verbatim}
+  \item \begin{verbatim}(intToString 7) ^ (intToString 9) :
+  string\end{verbatim} by (APP)
+\end{enumerate}
+\end{question}
+
+\begin{question}{Task 3.2}
+  The expression \begin{verbatim}intToString 2.0\end{verbatim} is not
+  well-typed because intToString is a function with
+  type \begin{verbatim}int -> string\end{verbatim}, and 2.0 has
+  type \begin{verbatim}real\end{verbatim}. The argument taken by
+  intToString must have type \begin{verbatim}int\end{verbatim}, so
+  since 2.0 does not have the right type, the expression is not
+  well-typed.
+\end{question}
+
+\newpage
+
+\begin{question}{Task 4.1}
+Since the fucntions argument is an expression, we must perform
+call-by-value evaluation before we substitute the argument into the
+function definition. The expression \begin{verbatim}fact
+  4\end{verbatim} evaluates to \begin{verbatim}24\end{verbatim}, so
+  the whole expression steps to \begin{verbatim}intToString
+  24\end{verbatim}. \begin{verbatim}intToString\end{verbatim} is a
+  function of type \begin{verbatim}int -> string\end{verbatim}, so the
+  expression will evaluate to the string \begin{verbatim}`24'\end{verbatim}.
+\end{question}
+
+\begin{question}{Task 4.2}
+\begin{enumerate}[(i)]
+  \item \begin{verbatim}fact 4\end{verbatim} $\implies$ 24
+  \item \begin{verbatim}intToString (fact 4)\end{verbatim}
+   $ \implies \begin{verbatim}intToString 24\end{verbatim}
+  \item \begin{verbatim}intToString 24\end{verbatim}
+  \implies \begin{verbatim}`24'\end{verbatim} 
+\end{enumerate}
+\end{question}
+\end{document}

@@ -1,0 +1,14 @@
+Group is
+   $/basis.cm
+
+   ../dist/intset.sig
+   SetKeepDuplicates.sml
+   SetNoDuplicates.sml
+
+   ../dist/LabDict.sig
+   TreeDict.sml
+
+   BetterLabDict.sig
+   BetterTreeDict.sml
+
+

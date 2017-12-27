@@ -1,0 +1,16 @@
+Group is
+   $/basis.cm
+
+   intset.sig
+   SetKeepDuplicates.sml
+   SetNoDuplicates.sml
+
+   LabDict.sig
+   TreeDict.sml
+
+   BetterLabDict.sig
+   BetterTreeDict.sml
+
+(* On lab today, nothing in this file is commented out.  However,
+ * DEFINITELY make a habit of checking this file to ensure that all the files
+ * that that you want to compile are actually being compiled *)

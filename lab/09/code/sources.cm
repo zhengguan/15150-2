@@ -1,0 +1,17 @@
+(* NOTE: you must uncomment setofsets and pairset once you implement them *)
+
+Group is
+    $/basis.cm
+
+    set.sig
+    equal.sig
+
+    dictset.sml
+    (* setofsets.sml *)
+    (* pairset.sml *)
+    
+    dict.sig
+    dict.sml
+
+    psetfunctor.sig
+    (* psetfunctor.sml *)

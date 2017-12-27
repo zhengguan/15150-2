@@ -1,0 +1,17 @@
+Library
+  signature SEQUENCE
+  structure Seq
+  structure VectorSeq
+is
+  $/basis.cm
+
+  sequence.sig
+  sequencecore-sig.sml
+  derivesequence.sml
+
+  vectorcore.sml
+  vectorsequence.sml
+
+  seq.sml
+
+

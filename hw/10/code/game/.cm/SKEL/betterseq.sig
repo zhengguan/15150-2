@@ -1,0 +1,2 @@
+Skeleton 5
+ac"BETTERSEQ"h1egp1c"SEQUENCE"

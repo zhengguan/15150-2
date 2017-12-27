@@ -1,0 +1,97 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage[margin=1in,headsep=.2in]{geometry}
+\usepackage{tikz}
+\usepackage{fancyvrb}
+
+\setlength{\headheight}{13.6pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+
+\def\indented#1{\list{}{}\item[]}
+\let\indented=\endlist
+
+\newcounter{questionCounter}
+\newcounter{partCounter}[questionCounter]
+\newenvironment{question}[2][\arabic{questionCounter}]{%
+    \setcounter{partCounter}{0}%
+    \vspace{.25in} \hrule \vspace{0.5em}%
+        \noindent{\bf #2}%
+    \vspace{0.8em} \hrule \vspace{.10in}%
+    \addtocounter{questionCounter}{1}%
+}{}
+\renewenvironment{part}[1][\alph{partCounter}]{%
+    \addtocounter{partCounter}{1}%
+    \vspace{.10in}%
+    \begin{indented}%
+       {\bf (#1)} %
+}{\end{indented}}
+
+%%%%%%%%%%%%%%%%% Identifying Information %%%%%%%%%%%%%%%%%
+%% This is here, so that you can make your homework look %%
+%% pretty when you compile it.                           %%
+%%         DO NOT PUT YOUR NAME ANYWHERE ELSE!!!!        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\myclass}{15-150}
+\newcommand{\myname}{Jonathan Li}
+\newcommand{\myandrew}{jlli}
+\newcommand{\myhwname}{Assigment 2}
+\newcommand{\myrecitation}{Section S}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancyplain}
+\lhead{\fancyplain{}{\myname}}
+\chead{\fancyplain{}{\textbf{\myclass{} \myhwname}}}
+\rhead{\fancyplain{}{\myandrew}}
+
+\begin{document}
+\thispagestyle{plain}
+
+\begin{center}
+{\Large \myclass{} \myhwname} \\
+\myname \\
+\myandrew \\
+\myrecitation \\
+\today
+\end{center}
+
+\begin{question}{Task 2.1}
+This code does not typecheck. For the function \verb!bopit!, the return type is type \verb!real!, while its input \verb!c! is also of type \verb!real!. However, according to the function declaration for \verb!bopit!, \verb!bopit! always evaluates to the value given by the function \verb!squareit! on \verb!(c + 1.0)!. However, the function \verb!squareit! has a return type of \verb!int!. This is because all three function declarations lie in the same scope, and the most recent function declaration of the function named \verb!squareit! refers to one of type \verb!real! $->$ \verb!int!.
+\end{question}
+
+\begin{question}{Task 2.2}
+\begin{enumerate}[(a)]
+    \item In line (10), \verb!i! is replaced with the real $5.0$, as \verb!i! was just declared as that value in the scope of the innermost \verb!let/in/end! expression.
+    \item In line (13), \verb!p! is substituted with the most recent binding of the variable \verb!p!, which in the scope of the innermost \verb!let/in/end! expression refers to the input \verb!p : int! to the function \verb!generate!. Since we are evaluating expressions with respect to the function call in line (21), \verb!p! refers to the variable \verb!r! in the highest scope of the code, which is declared in line (1) as the value \verb!4 : real! So in line (13), \verb!p! is substituted with \verb!4 : real!.
+    \item In line (15), \verb!a! refers to the most recent binding of the variable, which takes place in line (13):
+    \begin{verbatim}
+                        val a : real = a - real p
+    \end{verbatim}  
+    Now, the \verb!a! in line (13)'s value declaration refers to the value binding of \verb!a! in line (11) to the value \verb!temp * (real r)!. The last value bound to the variable \verb!temp! took place in the highest scope of the expression in line (4) to \verb!p - 1.0 => 2.0!. The value \verb!r! in line (11) refers to the input \verb!r! of the function \verb!generate!, which in the context of line (21) points to the value \verb!trunc i!, where the value \verb!i! is defined in line (2) to be \verb!2.0 : real!. Thus, \verb!r! in line (11) evaluates to $2.0$, and the value of \verb!a! in line (11) evaluates to \verb!(2.0 * 2.0) => 4.0!.
+    In line (13), if we take the value of \verb!p! to be the input supplied to the function \verb!generate! in line (21), which points to the value \verb!r! in the highest scope of the code, defined in line (1) as \verb!4 : int!, then the value of a is:
+    \begin{verbatim}
+                       a => (4.0) - (real 4)
+                       a => 0.0
+    \end{verbatim}
+    Thus, in line (15), \verb!a! is substituted with the value \verb!0.0!.
+
+\newpage
+    
+    \item \begin{align*}
+    \texttt{generate(r,trunc i,temp)} & \cong && \texttt{2 + (trunc(w + (real t) - a))} \\
+    & \cong  && \texttt{2 + (trunc((5.0 * 2.0) + (real 30) - 0.0))} \\
+    & \cong  && \texttt{2 + (trunc(10.0 + 30.0 - 0.0))} \\
+    & \cong  && \texttt{2 + 40} \\
+    & \cong  && \texttt{42}
+    \end{align*}
+\end{enumerate}
+\end{question}
+
+\begin{question}{Task 2.3}
+\end{question}
+
+
+\end{document}{center}

@@ -1,0 +1,259 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage[margin=1in,headsep=.2in]{geometry}
+\usepackage{tikz}
+
+\setlength{\headheight}{13.6pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+
+\def\indented#1{\list{}{}\item[]}
+\let\indented=\endlist
+
+\newcounter{questionCounter}
+\newcounter{partCounter}[questionCounter]
+\newenvironment{question}[2][\arabic{questionCounter}]{%
+    \setcounter{partCounter}{0}%
+    \vspace{.25in} \hrule \vspace{0.5em}%
+        \noindent{\bf #2}%
+    \vspace{0.8em} \hrule \vspace{.10in}%
+    \addtocounter{questionCounter}{1}%
+}{}
+\renewenvironment{part}[1][\alph{partCounter}]{%
+    \addtocounter{partCounter}{1}%
+    \vspace{.10in}%
+    \begin{indented}%
+       {\bf (#1)} %
+}{\end{indented}}
+
+%%%%%%%%%%%%%%%%% Identifying Information %%%%%%%%%%%%%%%%%
+%% This is here, so that you can make your homework look %%
+%% pretty when you compile it.                           %%
+%%         DO NOT PUT YOUR NAME ANYWHERE ELSE!!!!        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\myclass}{15-150}
+\newcommand{\myname}{Jonathan Li}
+\newcommand{\myandrew}{jlli}
+\newcommand{\myhwname}{Assigment 1}
+\newcommand{\myrecitation}{S}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancyplain}
+\lhead{\fancyplain{}{\myname}}
+\chead{\fancyplain{}{\textbf{\myclass{} \myhwname}}}
+\rhead{\fancyplain{}{\myandrew}}
+
+\begin{document}
+\thispagestyle{plain}
+
+\begin{center}
+{\Large \myclass{} \myhwname} \\
+\myname \\
+\myandrew \\
+\myrecitation \\
+\today
+\end{center}
+
+
+\begin{question}{Task 2.1} %% Put the question title here %%
+  The pinned picture on the Piazza post is of a long-eared rabbit with
+  what seems like deer antlers on the top of its head.
+\end{question}
+
+\begin{question}{Task 2.2}
+\begin{enumerate}[1.]
+\item Jon and Yoni had a discussion about lecture content, which is
+    permitted by the collaboration policy. Since their discussion was
+    not about homework, the whiteboard policy doesn't need to be
+    applied.
+\item Jon and Michael took notes from their discussion about
+    homework, but they discarded them after the end of their
+    discussion. This is akin to a discussion at a whiteboard, where
+    neither of them would have been able to take home the content
+    written on the whiteboard, so this discussion is permitted by the
+    course collaboration policy, provided they each wrote the homework
+    four hours after the discussion and they cited each other in their
+    respective writeups.
+\item According to course policy, students are not allowed to search
+    the internet, libraries, or other external sources for homework
+    solutions, so Brandon's actions in looking up a functional
+    programming textbook for help on homework are not permitted.
+\item In this situation, even if Michael cited Brandon as a
+    collaborator on his homework writeup, since their `collaboration'
+    could not have taken place at a whiteboard (Michael just read
+    Brandon's notes), both are in violation of course policy. Michael
+    should not have read Brandon's work, and Brandon should have taken
+    care to safeguard his work.
+\item According to course policy, homeworks must not be derived in
+    part or whole from work of others. By looking at the staff
+    solution from a previous semester, Jon is deriving part of his
+    work from the work of others, and so his actions are not permitted
+    by course policy.
+\end{enumerate}
+\end{question}
+
+\newpage
+
+\begin{question}{Task 3.1}
+In the expression \verb!(intToString 7) ^ (intToString 9)!, the left hand side of the
+expression \verb!(intToString 7)! evaluates to
+the string `7', which has type string. The right hand side of the
+expression \verb!(intToString 9)! evaluates to
+the string `9', which also has type string. Since the left and right
+hand sides of the expression match the input types of the infix
+operator \verb!^!, the whole expression is
+well-typed and has the type of the infix operator's return type,
+string. More formally:
+\begin{enumerate}[(i)]
+  \item \verb!intToString : int -> string!
+  \item \verb!7 : int!
+  \item \verb!(intToString 7) : string! by
+  (APP)
+  \item \verb!9 : int!
+  \item \verb!(intToString 9) : string! by
+  (APP)
+  \item \verb!^ : string * string -> string!
+  \item \verb!(intToString 7) ^ (intToString 9) : string! by (APP)
+\end{enumerate}
+\end{question}
+
+\begin{question}{Task 3.2}
+  The expression \verb!intToString 2.0! is not
+  well-typed because intToString is a function with
+  type \verb!int -> string!, and 2.0 has
+  type \verb!real!. The argument taken by
+  intToString must have type \verb!int!, so
+  since 2.0 does not have the right type, the expression is not
+  well-typed.
+\end{question}
+
+\newpage
+
+\begin{question}{Task 4.1}
+Since the fucntions argument is an expression, we must perform
+call-by-value evaluation before we substitute the argument into the
+function definition. The expression \verb!fact 4! evaluates to \verb!24!, so
+  the whole expression steps to \verb!intToString 24!. \verb!intToString! is a
+  function of type \verb!int -> string!, so the
+  expression will evaluate to the string \verb!`24'!.
+\end{question}
+
+\begin{question}{Task 4.2}
+\begin{enumerate}[(i)]
+  \item \verb!fact 4! $\implies 24$
+  \item \verb!intToString (fact 4)!
+    $\implies$ \verb!intToString 24!
+  \item \verb!intToString 24!
+  $\implies$ \verb!`24'! 
+\end{enumerate}
+\end{question}
+
+\newpage
+
+\begin{question}{Task 5.1}
+When the unmodified \verb!hw01.sml! file is run, a syntax error is raised.The error is caused by a lack of a bar before the second case expression \verb!zerop _ = false! in line 8. This error can be fixed by inserting a bar \verb!|! before the expression, like so: \verb!|zerop _ false!.
+\end{question}
+
+\begin{question}{Task 5.2}
+The first error message raised is a type mismatch between the operator \verb!fact! and the operand 5.0 in line 16. \verb!fact! \verb!REQUIRES! an integer operand, but the operand provided, $5.0$, is of type real. This can be fixed by replacing $5.0$ with an input of type int, probably $5$, like so: \verb!val result = fact 5!.
+\end{question}
+
+\begin{question}{Task 5.3}
+Now the first error message raised is a that in line 21, the compiler can't find function arguments in the function declaration for the function \verb!semi!. Specifically, the line reads \verb!fun semi : real = pi * r!. This expression can be fixed by introducing the function arguments into the function declaration, by writing \verb!fun semi (r : real) : real = pi * r!.
+\end{question}
+
+\begin{question}{Task 5.4}
+After line 21 is fixed, the first error message is now on line 27, again a type mismatch where the operator and operand don't agree. Specifically, in the function declaration \verb!fun area (d : int) : real = pi * d * d!, the input \verb!d! is specified as being of type \verb!int!, while the function definition uses the * operator to multiply pi and d. However, earlier the \verb!pi! was defined as a value with type \verb!real!, and the * operator cannot multiply together a real and an int. This can be fixed by declaring the type of the input d as type \verb!real! so as to match the type of pi, like so: \verb!fun area (d : real) : real = pi * d * d!. 
+\end{question}
+
+\begin{question}{Task 5.5}
+Once line 27 is fixed, an error is now raised at line 33, that there is an unbound variable or constructor called \verb!Pi!. SML appears to be case-sensitive, and \verb!Pi! (spelled with an uppercase "P") is not defined earlier, only \verb!pi! (lowercase "p") is, so this would be fixed by replacing \verb!Pi! with \verb!pi!, like so: \verb!fun vol (r : real) : real = 4.0 / 3.0 * pi * r * r * r!.
+\end{question}
+
+\newpage
+
+\begin{question}{Task 6.1}
+The function is not satisfied in this specification. If the function were given a negative integer as an input, say \verb!decimal ~5!, the return value would be the \verb!int list! \verb![~5]!. However, the \verb!ENSURES! specification says that the expression should evaluate to a list of \emph{digits} , defined as an integer in the range 0 - 9. ~5 is clearly not in the range 0 - 9, and so is not a digit, so the function does not satisfy this particular specification. 
+\end{question}
+
+\begin{question}{Task 6.2}
+The function satisfies this specification.
+\end{question}
+
+\begin{question}{Task 6.3}
+The function satisfies this specification.
+\end{question}
+
+\begin{question}{Task 6.4}
+The function satisfies this specification.
+\end{question}
+
+\begin{question}{Task 6.5}
+The specification described in Task 6.3 gives the most information. The \verb!ENSURES! comment in Task 6.4 says that decimal(n) evaluates to a list of digits, but since the \verb!REQUIRES! comment is the same between the specifications in Task 6.3 and 6.4, it's more accurate to say that \verb!decimal! will evaluate to a \emph{non-empty} list of digits. The specification in Task 6.2 only \verb!REQUIRES! \verb!n > 0!, while Task 6.3 \verb!REQUIRES! \verb!n >= 0!, which also fulfills the \verb!ENSURES! specification, which is the same across both, so Task 6.3 provides some more information about how decimal can be applied. 
+\end{question}
+
+\newpage
+
+\begin{question}{Task 7.1}
+\begin{center}
+\begin{tikzpicture}[scale=0.2]
+\tikzstyle{every node}+=[inner sep=0pt]
+\draw [black] (38,-9.8) circle (3);
+\draw (38,-9.8) node {$*$};
+\draw [black] (23.5,-22.7) circle (3);
+\draw (23.5,-22.7) node {$+$};
+\draw [black] (55.5,-22.7) circle (3);
+\draw (55.5,-22.7) node {$+$};
+\draw [black] (14.2,-41) circle (3);
+\draw (14.2,-41) node {$15$};
+\draw [black] (29.6,-41) circle (3);
+\draw (29.6,-41) node {$150$};
+\draw [black] (45.9,-39.6) circle (3);
+\draw (45.9,-39.6) node {$7$};
+\draw [black] (63.1,-39.6) circle (3);
+\draw (63.1,-39.6) node {$29$};
+\draw [black] (15.56,-38.33) -- (22.14,-25.37);
+\fill [black] (22.14,-25.37) -- (21.33,-25.86) -- (22.22,-26.31);
+\draw [black] (28.65,-38.15) -- (24.45,-25.55);
+\fill [black] (24.45,-25.55) -- (24.23,-26.46) -- (25.18,-26.15);
+\draw [black] (25.74,-20.71) -- (35.76,-11.79);
+\fill [black] (35.76,-11.79) -- (34.83,-11.95) -- (35.49,-12.7);
+\draw [black] (47.38,-36.99) -- (54.02,-25.31);
+\fill [black] (54.02,-25.31) -- (53.19,-25.76) -- (54.06,-26.25);
+\draw [black] (61.87,-36.86) -- (56.73,-25.44);
+\fill [black] (56.73,-25.44) -- (56.6,-26.37) -- (57.51,-25.96);
+\draw [black] (53.09,-20.92) -- (40.41,-11.58);
+\fill [black] (40.41,-11.58) -- (40.76,-12.46) -- (41.36,-11.65);
+\end{tikzpicture}
+\end{center}
+\end{question}
+
+\begin{question}{Task 7.2}
+The above computation tree has work 3 and span 2.
+\end{question}
+
+\begin{question}{Task 7.3}
+If we let $P = 2$, then by Brent's Theorem the number of steps to evaluate the expression $15+15)*(7+29)$ is at least max(\( \frac{W}{P} \),S). By the answer for Task 7.2, $W = 3$ and $S = 2$, so the lower bound on the number of steps is max(\( \frac{3}{2} \),2). This evaluates to 2, which is our lower bound for the number of steps required to evaluate the expression.
+\end{question}
+
+\begin{question}{Task 7.4}
+\begin{align*}
+& && \text{Processor 1} &&& \text{Processor 2} \\
+\text{Step 1} & && 15+150 \implies 175 &&& 7 + 29 \implies 36 \\
+\text{Step 2} & && 175 * 36 \implies 6300 &&& \text{Idle}
+\end{align*}
+\end{question}
+
+\begin{question}{Task 7.5}
+For each tree, the entire planting process takes $t$ minutes to dig a hole, $t$ minutes to sow the seed, and then $t$ minutes to sprinkle water. While the sower is sowing the first seed, the digger can move on to the next seed, and while the sprinkler is sprinkling the first seed, the sower can sow the second, while the digger can dig a hole for the third seed. Following this logic, we can make the inference that if the digger is working on the \emph{n}th seed, the sower is working the $(n-1)$th seed, and the sprinkler is working on the $(n-2)$th seed, for $n \geq 3$. For $n$ apple trees, it will take the digger $nt$ minutes to dig holes for all of them. By the time the digger is done, the sower still need to sow the $n$th seed, taking another t minutes, and the sprinkler needs to sprinkle both the $n$th and the $(n-1)$th seed, taking $2t$ minutes. Thus, the whole process will take $(n+2)t$ minutes.
+\end{question}
+
+\begin{question}{Task 7.6}
+If there were an infinite number of diggers, sowers, and sprinklers, then we perform digging, sowing, and sprinkling of all $n$ of the seeds in just 3 steps. It would take $t$ minutes for $n$ diggers out of our infinite supply to dig holes for $n$ seeds, another $t$ minutes for $n$ sowers to sow them, and another $t$ minutes for $n$ sprinklers to sprinkle them, taking $t+t+t=3t$ minutes total.
+\end{question}
+
+
+\end{document}

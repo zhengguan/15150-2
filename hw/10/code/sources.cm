@@ -1,0 +1,32 @@
+group is
+  $/basis.cm
+  $/smlnj-lib.cm
+  ../../../src/sequence/sources.cm
+  ../../../src/matrix/sources.cm
+  lib/game/explicit.sml
+  lib/game/minimax.sml
+  lib/ansi.sml
+
+  (* Looking, saying *)
+  las.sml
+  game/betterseq.sig
+  game/betterseq.sml
+  game/game.sig
+  game/consts.sig
+  game/player.sig
+  game/estimator.sml
+  lib/game/humanplayer.sml
+  lib/game/transcriptPlayer.sml
+  game/alphabeta.sml
+  game/jamboree.sml
+  lib/game/referee.sml
+
+  las.sml
+  (* Tic-Tac-Toe *)
+  game/tictactoe.sml
+
+  (* Running Games *)
+  lib/game/options.sml
+  lib/game/playergenerator.sml
+  lib/game/runtictactoe.sml
+

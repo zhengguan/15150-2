@@ -1,0 +1,126 @@
+\documentclass[11pt]{article}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage[margin=1in,headsep=.2in]{geometry}
+\usepackage{tikz}
+\usepackage{fancyvrb}
+
+\setlength{\headheight}{13.6pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+
+\def\indented#1{\list{}{}\item[]}
+\let\indented=\endlist
+
+\newcounter{questionCounter}
+\newcounter{partCounter}[questionCounter]
+\newenvironment{question}[2][\arabic{questionCounter}]{%
+    \setcounter{partCounter}{0}%
+    \vspace{.25in} \hrule \vspace{0.5em}%
+        \noindent{\bf #2}%
+    \vspace{0.8em} \hrule \vspace{.10in}%
+    \addtocounter{questionCounter}{1}%
+}{}
+\renewenvironment{part}[1][\alph{partCounter}]{%
+    \addtocounter{partCounter}{1}%
+    \vspace{.10in}%
+    \begin{indented}%
+       {\bf (#1)} %
+}{\end{indented}}
+
+%%%%%%%%%%%%%%%%% Identifying Information %%%%%%%%%%%%%%%%%
+%% This is here, so that you can make your homework look %%
+%% pretty when you compile it.                           %%
+%%         DO NOT PUT YOUR NAME ANYWHERE ELSE!!!!        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\myclass}{15-150}
+\newcommand{\myname}{Jonathan Li}
+\newcommand{\myandrew}{jlli}
+\newcommand{\myhwname}{Assigment 2}
+\newcommand{\myrecitation}{Section S}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancyplain}
+\lhead{\fancyplain{}{\myname}}
+\chead{\fancyplain{}{\textbf{\myclass{} \myhwname}}}
+\rhead{\fancyplain{}{\myandrew}}
+
+\begin{document}
+\thispagestyle{plain}
+
+\begin{center}
+{\Large \myclass{} \myhwname} \\
+\myname \\
+\myandrew \\
+\myrecitation \\
+\today
+\end{center}
+
+\begin{question}{Task 2.1}
+\underline{Theorem 1:} For all values \verb!l : (string * int) list!, \verb!zip(unzip l)! $\cong$ \verb!l!.\\
+Proof: By structural induction on \verb!l!.\\
+\textbf{Case \texttt{[]}:} To show: \verb!zip(unzip [])! $\cong$ \verb![]!\\
+\underline{Proof:}
+\begin{align*}
+    \texttt{zip(unzip [])} & \cong && \texttt{zip(case [] of [] => ([],[])| }\dots\texttt{)} &&& \text{[step]}\\
+    & \cong && \texttt{zip(([],[]))} &&& \text{[step]}\\
+    & \cong && \texttt{case ([],[]) of ([],\char`_) => [] | }\dots\texttt{)} &&& \text{[step]}\\
+    & \cong && \texttt{[]}
+\end{align*}
+By extensional equivalence, \verb!zip(unzip [])! $\cong$ \verb![]!.\\
+\textbf{Case \texttt{(x1, x2)::xs}} for some \verb!x1!, \verb!x2!, \verb!xs!.\\
+Inductive Hypothesis: \verb!zip(unzip xs) => xs!\\
+\hspace{1cm} \textbf{*Note I:} \verb!unzip xs => (fst unzip xs, snd unzip xs)!\\
+\hspace{1cm} \textbf{*Note II:} The IH $\implies$ \verb!unzip xs! is a valuable expression\\
+\qquad To show: \verb!zip(unzip((x1, x2)::xs)! $\cong$ \verb!(x1, x2)::xs!\\
+\underline{Proof:}
+\begin{align*}
+    \texttt{zip(unzip (x1, x2)::xs)} &\cong && \texttt{zip(case (x1, x2) of [] => ([],[]) | }\dots\texttt{)} &&& \text{[step]}\\
+    &\cong && \texttt{zip(let val (l1, l2) = unzip xs in}\dots\texttt{)} &&& \text{[step]}\\
+    &\cong && \texttt{zip(x1::fst(unzip xs), x2::snd(unzip xs))} &&& \text{[Rule 1,}\\
+    & && &&& \text{Note I,}\\
+    & && &&& \text{Note II]}\\
+    &\cong && \texttt{case (x1::fst(unzip xs), x2::snd(unzip xs) of}\dots\texttt{)} &&& \text{[step]}\\
+    &\cong && \texttt{(x1, x2)::zip(fst (unzip xs), snd (unzip xs))} &&& \text{[step]}\\
+    &\cong && \texttt{(x1, x2:)::zip(unzip xs)} &&& \text{[Rule 2]}\\
+    &\cong && \texttt{(x1,x2)::xs} &&& \text{[IH]}
+\end{align*}
+By extensional equivalence, \verb!zip(unzip (x1, x2)::xs)! $\cong$ \verb!(x1, x2)::xs!.\\
+Since the Base Case and the Inductive Step hold, Theorem 1 must be true.
+\end{question}
+
+\newpage
+
+\begin{question}{Task 2.2}
+\underline{Theorem 2:} For all values \verb!l1 : string list!, \verb!l2 : int list!, \verb!unzip(zip(l1, l2))! $\cong$ \verb!(l1, l2)!\\
+\textbf{Theorem 2 is false:} Proof by counterexample.\\
+Let \verb!l1 = ["hi"]!, \verb!l2 = [1, 2]!. Then,
+\begin{align*}
+    \texttt{unzip(zip(l1, l2))} &\cong && \texttt{unzip(zip(["hi"], [1, 2]))} &&&\\
+    &\cong && \texttt{unzip(case (["hi],[1, 2]) of}\dots\texttt{)} &&& \text{[step]}\\
+    &\cong && \texttt{unzip(("hi",1)::zip([],[2]))} &&& \text{[step]}\\
+    &\cong && \texttt{unzip(("hi",1)::[]} &&& \text{[step]}\\
+    &\cong && \texttt{unzip([("hi",1)])} &&& \text{[step]}\\
+    &\cong && \texttt{case [("hi",1)] of [] => ([],[])| }\dots\ &&& \text{[step]}\\
+    &\cong && \texttt{let val (l1, l2) = unzip [] in ("hi"::l1, 1::l2) end} &&& \text{[step]}\\
+    &\cong && \texttt{("hi"::fst(unzip []), 1::snd(unzip []))} &&& \text{[Rule 1]}\\
+    &\cong && \texttt{("hi"::[], 1::[])} &&& \text{[step]}\\
+    &\cong && \texttt{(["hi"],[1])} &&& \text{[step]}
+\end{align*}
+$\therefore$ \verb!unzip(zip(["hi"], [1, 2, 3]))! $\implies$ \verb!(["hi"],[1])! $\not\cong$ \verb!(["hi"], [1, 2, 3])!\\
+Thus by counterexample, Theorem 2 is false.
+\end{question}
+
+\newpage
+
+\begin{question}{Task 5.2}
+Given a list \verb!L! with length $n$, the asymptotic bound for the work of \verb!prefixSum L! is $n^2$. In other words, $W_{\texttt{prefixSum}}(n)$ is $O(n^2)$, polynomial time.
+\end{question}
+
+\begin{question}{Task 5.4}
+Given a list \verb!L! with length $n$, the asymptotic bound for the work of \verb!prefixSumFast L! is $n$. In other words, $W_{\texttt{prefixSumFast}}(n)$ is $O(n)$, linear time.
+\end{question}
+
+\end{document}{center}

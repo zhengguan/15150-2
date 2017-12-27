@@ -1,0 +1,18 @@
+Group is
+  $/basis.cm
+
+  (* Uncomment the files when you want to compile them *)
+
+  POINTS.sig
+  points.sml
+
+  MATRIX.sig
+  funMatrix.sml
+  matrixTest.sml
+
+  decision/searchable.sig
+  decision/search.sig
+  decision/tree.sml
+  decision/shrub.sml
+  decision/combinations.sml
+  decision/search.sml

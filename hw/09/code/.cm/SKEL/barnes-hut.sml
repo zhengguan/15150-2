@@ -1,0 +1,2 @@
+Skeleton 5
+d3aеўBarnesHut"i1aдўA"gp1c"BHArgs"jh8ad"Args"gp1яaдўSeq"gp3ядўBB"я3aдўPlane"gp3яя>яЃCaя>gp2яя>aдўMech"зрІяяЃ$aдўScalar"gp4яя>яЃяЃ4eяЃ+f5Cяя>я3яЃ4яЃNNgp1c"BARNESHUT"ad"RatTrans"jjgp1d"RatArgs"зр±язр±еўTranscripts"ad"RealTrans"jjgp1d"RealArgs"яѓ	яѓ

@@ -1,0 +1,71 @@
+\documentclass{article}
+\input{uses.tex}
+\input{defs.tex}
+\usepackage[british]{babel}
+%%\usepackage{attrib}
+
+
+\title{Sequence Reference}
+\date{Last Revised: \today}
+
+\begin{document}
+\maketitle
+
+\textbf{Please cite this document if you use it in your homework.}
+
+\bigskip
+
+The type \verb|Seq.seq| represents sequences.  Sequences are
+\emph{parallel collections}: ordered collections of things, with
+parallelism-friendly operations on them.  Don't think of sequences as
+being implemented by lists or trees (though you could implement them as
+such); think of them as a new built-in type with only the operations
+we're about to describe.  The differences between sequences and lists or
+trees is the cost of the operations, which we specify below.
+
+
+\input{signature}
+
+\newpage
+\section{Cost Bounds}
+Unfortunately, there is no known way of stating time complexity of a higher
+order function, such as map, itself
+abstractly in the function|there is no theory of asymptotic analysis for
+higher-order functions.  Therefore, this chart \textbf{assumes
+that all functions that are given as arguments take constant time.}
+To consider the cost if these functions do not take constant time, we will
+need to go back to the cost graphs and expand them to include the
+additional work and span.
+
+\begin{center}
+\begin{tabular}{c|c|c}
+Function & Work & Span\\
+\hline
+\sml{Seq.length S} & $O(1)$ & $O(1)$ \\
+\sml{Seq.empty ()} & $O(1)$ & $O(1)$ \\
+\sml{Seq.singleton x} & $O(1)$ & $O(1)$ \\
+\sml{Seq.append (S1, S2)} & $O(|S1| + |S2|)$ & $O(1)$ \\
+\sml{Seq.tabulate f n} & $O(n)$ & $O(1)$ \\
+\sml{Seq.nth i S} & $O(1)$ & $O(1)$ \\
+\sml{Seq.filter p S} & $O(|S|)$ & $O(\log |S|)$ \\
+\sml{Seq.map f S} & $O(|S|)$ & $O(1)$ \\
+\sml{Seq.reduce c b S} & $O(|S|)$ & $O(\log |S|))$\\
+\sml{Seq.reduce1 c b S} & $O(|S|)$ & $O(\log |S|))$\\
+\sml{Seq.mapreduce l e n S} & $O(|S|)$ & $O(\log |S|))$ \\
+\sml{Seq.toString ts S} & $O(|S|)$ & $O(\log|S|) $ \\
+\sml{Seq.repeat n x} & $O(n)$ & $O(1)$\\
+\sml{Seq.flatten S} & $O(|S| + \max_{s\in S}|s|)$& $O(\log |S|)$ \\
+\sml{Seq.zip (S1,S2)} & $O(\min(|S1|,|S2|)$ & $O(1)$\\
+\sml{Seq.split i S} & $O(|S|)$ & $O(1)$\\
+\sml{Seq.take i S} & $O(i)$ & $O(1)$ \\
+\sml{Seq.drop i S}& $O(|S| - i)$ & $O(1)$ \\
+\sml{Seq.cons x S} & $O(|S|)$ & $O(1)$ \\
+\sml{Seq.update (S, i, x)} & $O(|S|)$ & $O(1)$\\
+\sml{Seq.toList S} & $O(|S|)$ & $O(|S|)$ \\
+\sml{Seq.fromList L} & $O(|L|)$ & $O(|L|)$ \\
+\end{tabular}
+\end{center}
+\newpage
+\input{cost}
+
+\end{document}

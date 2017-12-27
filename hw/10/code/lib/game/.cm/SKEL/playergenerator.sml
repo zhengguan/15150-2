@@ -1,0 +1,2 @@
+Skeleton 5
+d9ae"MMTwo"й±бдҐG"зр±гҐESTGAME"ки±б€зр±€зр±еҐMiniMax"ae"MMFour"€ae"ABThree"й€к€ зр±еҐAlphaBeta"ae"ABTwo"€БCae"ABFour"€Бae"ABFive"€Бae"ABSix"€Бae"JamFour"й€к€ зр±еҐJamboree"ae"JamSix"€В!N

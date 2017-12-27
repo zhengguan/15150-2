@@ -1,0 +1,337 @@
+signature ARRAY = sig
+    type 'a array
+
+    (* init_array: int -> 'a -> 'a array
+     * requires: len >= 0
+     * ensures:  if arr == init_array len init, and i < len, arr i
+     *           is a ref cell initially set to init, but whose
+     *           state is persistent across calls to arr i  *)
+    val init_array : int -> 'a -> 'a array
+
+    (* ENSURES: get a i == SOME <ith elem of a> if possible, else NONE *)
+    val get        : 'a array -> int -> 'a ref option
+
+    (* ENSURES: foldl f b a combines all elements of a using f, with b as base case *)
+    val foldl      :  ('a ref * 'b -> 'b) -> 'b -> 'a array -> 'b
+
+    (* double_len: 'a array -> 'a -> 'a array
+     * requires: len >= 0, for all i. 0 <= i < len, arr i is a value
+     * ensures:  if arr2 == double_len arr len init, arr2 is array of length
+     *           2*len with inital values init, and the first half of arr2 is
+     *           the same as arr.
+     *)
+    val double_len : 'a array -> 'a -> 'a array
+
+    (* REQUIRES: a is not empty
+     * ENSURES: expand a x new_len has length new_len. first len(a) elements are
+     * same as those in a. if new elements are added, all of them are x *)
+    val expand     : 'a array -> int -> 'a -> 'a array
+
+    (* FOR YOUR DEBUGGING CONVENIENCE: prints all the stuff in an array *)
+    val print_arr  : ('a -> string) -> 'a array -> unit
+end
+
+
+structure Array : ARRAY =
+  struct
+    datatype 'a array = A of int * (int -> 'a ref)
+    exception OutOfBounds
+
+    (* init_array: int -> 'a -> 'a array
+     * REQUIRES: n >= 0
+     * ENSURES: init_array n a => an array of length len, where every
+     *          element is init
+     *)
+    fun init_array (n : int) (a : 'a) : 'a array =
+        case n of
+          0 => A(0,(fn i => raise OutOfBounds))
+         |1 => (let
+                   val r = ref(a)
+                in
+                  A(1,(fn i => (case i of 0 => r | _ => raise OutOfBounds)))
+                end)
+         |_ => (let
+                   val n' = (n div 2)
+                   val n'' = (n - n')
+                   val A(n',f) = init_array n' a
+                   val A(n'',g) = init_array n''  a
+                in
+                  A(n,(fn i => (case (i < n') of
+                                    true => (f i)
+                                   |false => (g (i - n')))))
+                end)
+
+val A(4,f1) = init_array 4 "hi"
+val A(3,f2) = init_array 3 42
+val true = ("hi" = !(f1 0))
+val true = ("hi" = !(f1 1))
+val true = (42 = !(f2 2))
+val () = (f2 2 := 24)
+val true = (24 = !(f2 2))
+val true = (42 = !(f2 1))
+
+    (* get : 'a array -> int -> 'a ref option
+     * REQUIRES: true
+     * ENSURES: get a i => SOME e, where e is the ith element of a, or
+                       => NONE if i is out of bounds
+     *)
+    fun  get (a : 'a array) (i : int) : 'a ref option =
+         let
+            val (A(n,f)) = a
+         in
+            case (i < n) of
+              false => NONE
+             |true  => SOME((f i))
+         end
+
+val A(3,g) = init_array 3 1
+val () = ((g 1) := 2)
+val () = ((g 2) := 3)
+val extract = (fn opt => case opt of SOME v => v | NONE => raise Fail "well...")
+val true = ((g 2) = (extract(get (A(3,g)) 2)))
+val NONE : int ref option = get (A(3,f2)) 3
+
+    (* foldl :  ('a ref * 'b -> 'b) -> 'b -> 'a array -> 'b
+     * REQUIRES: f is total
+     * ENSURES: foldl f b a => the value that results from combining the
+     *         elements of a from left to right, with b as the starting value
+     *)
+    fun foldl (f : ('a ref * 'b) -> 'b) (b : 'b) (a : 'a array) : 'b =
+        let
+           val A(n,g) = a
+        in
+           (case n of
+             0 => b
+            |_ => (let
+                      val a' = A((n-1),(fn i => g (i+1)))
+                   in
+                      foldl f (f((g 0),b)) a'
+                   end))
+        end
+
+    (* double_len: 'a array -> 'a -> 'a array
+     * REQUIRES: if arr has length n, n >= 0
+     * ENSURES: double_len arr init => an array of length 2n, where the
+     *         first n elements point to the exact same ref cells as arr, and
+     *         the last n elements point to ref cells containing init
+     *)
+    fun double_len (arr : 'a array) (init : 'a) : 'a array =
+        let
+           val A(n,f) = arr
+           val A(n',f') = init_array n init
+        in
+           A((2*n),(fn i => (case (i < n) of
+                               true  => (f i)
+                              |false => (f' (i - n)))))
+        end
+
+    (* expand : 'a array -> int -> 'a -> 'a array
+     * REQUIRES: i >= 0
+     * ENSURES: expand a i x => an array of length i, where, if a has length n,
+     *          the first n elements point to the same ref cells as a,
+     *          cutting off at the ith element if i is less than n, and
+     *          all elements with an index >= n pointing to x if i > n
+     *)
+    fun expand (a : 'a array) (i : int) (x : 'a) : 'a array =
+        let
+           val A(n,f) = a
+        in
+           (case Int.compare(i,n) of
+              EQUAL => a
+             |LESS => A(i,f)
+             |GREATER => (let
+                             val n' = (i - n)
+                             val A(n',g) = init_array n' x
+                          in
+                             A(i, (fn j => (case (j < n) of
+                                              true  => f j
+                                             |false => g (j - n))))
+                          end))
+        end
+
+   (* print_arr  : ('a -> string) -> 'a array -> unit *)
+   fun print_arr toString (A(n,f)) =
+       case n of
+	   0 => ()
+	 | _ =>(print (toString (!(f 0))); print_arr toString(A(n-1,fn i => f(i+1))))
+
+   end
+
+
+signature FIB =
+  sig
+    (* memo_fib: unit -> int -> IntInf.int
+     * requires: n >= 0
+     * ensures:  memo_fib () 0 == 0, memo_fib () 1 == 1,
+     *           memo_fib () n == memo_fib () (n -1) + memo_fib () (n - 2)
+     *    Less than exponential time
+     *)
+    val memo_fib: unit -> (int -> IntInf.int)
+  end
+
+structure Fib :> FIB =
+  struct
+
+  val fib_bank = ref(Array.init_array 1 (Int.toLarge(0)))
+  val () = (fib_bank := Array.expand (!fib_bank) 2 (Int.toLarge(1)))
+
+  (* memo_fib: unit -> int -> IntInf.int
+   * REQUIRES: i >= 0
+   * ENSURES: memo_fib () i => the ith Fibonacci number, where
+   *          memo_fib () 0 => 0  and memo_fib () 1 => 1.
+   *          memo_fib should operate in less than exponential time
+   *)
+  fun memo_fib (() : unit) : int -> IntInf.int =
+      (let
+          val fib_array = !(fib_bank)
+       in
+         (fn i => (case (Array.get fib_array i) of
+                     SOME r => !r
+                    |NONE =>
+           ((let
+                val length : int = Array.foldl (fn (r : IntInf.int ref,
+                                                    count : int) =>
+                                               count + 1) 0 fib_array
+                val SOME(r1) = Array.get fib_array (length - 1)
+                val SOME(r2) = Array.get fib_array (length - 2)
+             in
+               fib_bank := (Array.expand fib_array (length + 1)
+                                         ((!r1) + (!r2)))
+             end);
+            memo_fib () i)))
+       end)
+end
+
+signature FINDS =
+  sig
+    (* ENSURES: findr p A == SOME r iff exists r in A where p r == true, else NONE *)
+    val findr     : ('a ref -> bool) -> 'a Array.array -> 'a ref option
+    (* ENSURES: findr p A == SOME v iff exists r in A where p r == true, r = ref v, else NONE *)
+    val findv     : ('a -> bool)     -> 'a Array.array -> 'a ref option
+    (* ENSURES: If exists r in A, r = ref v, p v == true, then findv_imp p A out puts r in out and
+     * returns true, else returns false *)
+    val findv_imp : ('a -> bool)     -> 'a Array.array -> 'a ref ref -> bool
+    (* ENSURES containsr x A == true iff x is in A, else false *)
+    val containsr : 'a ref           -> 'a Array.array -> bool
+  end
+
+structure Finds : FINDS =
+struct
+(* findr : ('a ref -> bool) -> 'a Array.array -> 'a ref option
+ * REQUIRES: p is total
+ * ENSURES: findr p a => SOME r if there exists r in a such that
+            p r => true, and
+                      => NONE if no such r exists
+ *)
+fun findr (p : 'a ref -> bool) (a : 'a Array.array) : 'a ref option =
+    Array.foldl (fn (r : 'a ref, opt : 'a ref option) =>
+                    (case (opt, (p r)) of
+                       (NONE, true) => SOME (r)
+                      |(_,_) => opt)) NONE a
+
+(* findv : ('a -> bool) -> 'a Array.array -> 'a ref option
+ * REQUIRES: p is total
+ * ENSURES: findv p a => SOME r if there exists r in a containing a value x
+ *          such that p x => true, and
+                      => NONE if no such r exists
+ *)
+fun findv (p : 'a -> bool) (a : 'a Array.array) : 'a ref option =
+    Array.foldl (fn (r : 'a ref, opt : 'a ref option) =>
+                    (case (opt, (p (!r))) of
+                       (NONE, true) => SOME (r)
+                      |(_,_) => opt)) NONE a
+
+(* findv_imp : ('a -> bool) -> 'a Array.array -> 'a ref ref -> bool
+ * REQUIRES: p is total
+ * ENSURES: findv_imp p a out => true if there exists a reference r in a
+ *          containing a value x such that p x => true, updating out
+ *          in the process, and
+ *                            => false if no such reference exists
+ *)
+fun findv_imp (p : 'a -> bool) (a : 'a Array.array) (out : 'a ref ref) : bool =
+    case (findv p a) of
+      NONE => false
+     |SOME(r) => ((out := r);true)
+
+(* containsr : 'a ref -> 'a Array.array -> bool
+ * REQUIRES: true
+ * ENSURES: containsr r a => true iff the reference r is in the array a, and
+ *                        => false otherwise
+ *)
+fun containsr (r : 'a ref) (a : 'a Array.array) : bool =
+    case (findr (fn r' => (r = r')) a) of
+      NONE => false
+     |SOME(r) => true
+end
+
+structure TestStuff =
+struct
+(* extract : 'a option -> 'a
+ * REQUIRES: opt => SOME v, where v is a value of type 'a
+ * ENSURES: extract opt => v
+ *)
+fun extract (opt : 'a option) : 'a =
+    case opt of
+      SOME v => v
+     |NONE => raise Fail "lol not supposed to do that"
+
+val 42 = extract (SOME(42))
+
+(* Array structure tests *)
+val a1 = Array.init_array 4 "hi! "
+val () = ((extract (Array.get a1 3)) := "bye!")
+val a2 = Array.init_array 3 42
+val "hi! " = !(extract (Array.get a1 0))
+val "bye!" = !(extract (Array.get a1 3))
+val 42 = !(extract (Array.get a2 2))
+
+val NONE = Array.get a1 4
+
+val a3 = Array.init_array 3 1
+val () = ((extract (Array.get a3 1)) := 2)
+val () = ((extract (Array.get a3 2)) := 3)
+val 6 = Array.foldl (fn (r,x) => x + (!r)) 0 a3
+val "hi! hi! hi! bye!" = Array.foldl (fn (r,x) => x ^ (!r)) "" a1
+
+val a4 = Array.double_len a3 4
+val 4 = !(extract (Array.get a4 3))
+val 18 = Array.foldl (fn (r,x) => x + (!r)) 0 a4
+
+val a5 = Array.expand a1 5 "hi again!"
+val () = ((extract (Array.get a1 3)) := "bye! ")
+(* do a1 and a5 really share the references...? *)
+val "hi! hi! hi! bye! hi again!" = Array.foldl (fn (r,x) => x ^ (!r)) "" a5
+(* Yes, they do! *)
+
+(* Fib structure tests *)
+val f = Fib.memo_fib ()
+val 0 = f 0
+val 1 = f 1
+val 2 = f 3
+(* time for the big test! *)
+val 6765 = f 20
+val 832040 = f 30
+
+(* Finds structure tests *)
+val a1' = Array.init_array 4 "hi"
+val "hi" = !(extract (Finds.findr (fn r => ((!r) = "hi")) a1'))
+val () = ((extract (Array.get a1' 3)) := "bye!")
+val "bye!" = !(extract (Finds.findr (fn r => ((!r) = "bye!")) a1'))
+val NONE = Finds.findr (fn r => ((!r) = "hi?")) a1'
+
+val "hi" = !(extract (Finds.findv (fn s => s = "hi") a1'))
+val "bye!" = !(extract (Finds.findv (fn s => s = "bye!") a1'))
+val NONE = Finds.findv (fn s => s = "I hate you!") a1'
+
+val r1 = ref(ref("That was mean..."))
+val true = Finds.findv_imp (fn s => s = "hi") a1' r1
+val "hi" = !(!(r1))
+val false = Finds.findv_imp (fn s => s = "Bang Bang Banality?") a1' r1
+val "hi" = !(!(r1))
+
+val true = Finds.containsr (!r1) a1'
+val false = Finds.containsr (ref("hi")) a1'
+
+(* That's all folks. Thanks TAs *)
+
+end

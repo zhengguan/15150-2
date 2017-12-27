@@ -1,0 +1,110 @@
+\section{The Signature}
+\begin{itemize}
+\item \sml{\asc{Seq.length}{'a Seq.seq -> int}}\\ \sml{Seq.length s}
+  evaluates to the number of items in \sml{s}.
+
+\item \sml{\oftp{Seq.empty}{unit -> 'a Seq.seq}}\\ \sml{Seq.empty ()}
+  evaluates to the sequence of length zero.
+
+\item \sml{\oftp{Seq.singleton}{'a -> 'a Seq.seq}}\\ \sml{Seq.singleton x}
+  evaluates to a sequence of length $1$ where the only item is \sml{x}.
+
+\item \sml{\oftp{Seq.append}{'a Seq.seq * 'a Seq.seq -> 'a Seq.seq}}\\ If
+  \sml{s1} has length $l_1$ and \sml{s2} has length $l_2$, \sml{Seq.append}
+  evaluates to a sequence with length $l_1 + l_2$ whose first $l_1$ items
+  are the sequence \sml{s1} and whose last $l_2$ items are the sequence
+  \sml{s2}.
+
+\item \sml{\oftp{Seq.tabulate}{(int -> 'a) -> int -> 'a
+    Seq.seq}}\\ \sml{Seq.tabulate f n} evaluates to a sequence \sml{s} with
+  length \sml{n} where the $i^{th}$ item of \sml{s} is the result of
+  evaluating \sml{(f i)}. This is zero-indexed.  \sml{Seq.tabulate f i} raises \sml{Range} if
+  \sml{n} is less than zero.
+
+\item \sml{\oftp{Seq.nth}{int -> 'a Seq.seq -> 'a}}\\ \sml{nth i s}
+  evaluates to the $i^{th}$ item in \sml{s}. This is
+  zero-indexed. \sml{Seq.nth i s} will raise \sml{Range} if \sml{i} is
+  negative or greater than \sml{(Seq.length s)-1}.
+
+\item \sml{\oftp{Seq.filter}{('a -> bool) -> 'a Seq.seq -> 'a
+    Seq.seq}}\\
+  \sml{Seq.filter p s} evaluates to a sequence that contains all of the
+  elements of \sml{s} for which \sml{p} evaluates to \sml{true},
+  preserving element order.
+  
+\item \sml{\oftp{Seq.map}{('a -> 'b) -> 'a Seq.seq -> 'b
+    Seq.seq}}\\ \sml{Seq.map f s} maps \sml{f} over the sequence
+  \sml{s}. That is to say, it evaluates to a sequence \sml{s'} such that
+  \sml{s} and \sml{s'} have the same length and the $i^{th}$ item in
+  \sml{s'} is the result of applying \sml{f} to the $i^{th}$ item of
+  \sml{s}.
+
+\item \sml{\oftp{Seq.reduce}{(('a * 'a) -> 'a) -> 'a -> 'a Seq.seq ->
+    'a}}\\ \sml{Seq.reduce c b s} combines all of the items in \sml{s}
+  pairwise with \sml{c} using \sml{b} as the base case. \sml{c} must be
+  associative, with \sml{b} as its identity.
+
+\item \sml{\oftp{Seq.reduce1}{(('a * 'a) -> 'a) -> 'a Seq.seq ->
+    'a}}\\ \sml{Seq.reduce1 c s} combines all of the items in \sml{s}
+  pairwise with \sml{c}.  The sequence \sml{s} must be nonempty and
+  the operation \sml{c} must be associative.
+
+\item \sml{\oftp{Seq.mapreduce}{('a -> 'b) -> 'b -> ('b * 'b -> 'b) -> 'a
+    Seq.seq -> 'b}}\\ \sml{Seq.mapreduce l e n s} is equivalent to
+  \sml{Seq.reduce n e (Seq.map l s)}.
+
+\item \sml{\oftp{Seq.toString}{('a -> string) -> 'a Seq.seq ->
+    string}}\\ \sml{Seq.toString ts s} evaluates to a string
+  representation of \sml{s} by using \sml{ts} to convert each item in
+  \sml{s} to a \sml{string}.
+
+\item \sml{\oftp{Seq.repeat}{int -> 'a -> 'a Seq.seq}}\\ \sml{Seq.repeat
+  n x} evaluates to a sequence consisting of exactly \sml{n}-many copies
+  of \sml{x}.
+
+\item \sml{\oftp{Seq.flatten}{'a Seq.seq Seq.seq -> 'a
+    Seq.seq}}\\ \sml{Seq.flatten ss} is equivalent to \sml{reduce append
+  (empty ()) ss}
+
+\item \sml{\oftp{Seq.zip}{('a Seq.seq * 'b Seq.seq) -> ('a * 'b)
+    Seq.seq}}\\ \sml{Seq.zip (s1,s2)} evaluates to a sequence whose
+  $n^{th}$ item is the pair of the $n^{th}$ item of \sml{s1} and the
+  $n^{th}$ item of \sml{s2}.
+
+\item \sml{\oftp{Seq.split}{int -> 'a Seq.seq -> 'a Seq.seq * 'a
+    Seq.seq}}\\ If \sml{s} has at least \sml{i} elements, \sml{Seq.split i s}
+  evaluates to a pair of sequences
+  \sml{(s1,s2)} where \sml{s1} has length \sml{i} and \sml{append s1 s2}
+  is the same as \sml{s}. Otherwise it raises \sml{Range}.
+
+\item \sml{\oftp{Seq.take}{int -> 'a Seq.seq -> 'a Seq.seq}}\\ \sml{Seq.take i s}
+  evaluates to the sequence containing exactly the first \sml{i} elements of \sml{s}
+  if $0 \leq \sml{i} \leq \msml{length \: s}$, and raises \sml{Range} otherwise.
+
+\item \sml{\oftp{Seq.drop}{int -> 'a Seq.seq -> 'a Seq.seq}}\\ \sml{Seq.drop i s}
+  evaluates to the sequence containing all but the first \sml{i} elements of \sml{s}
+  if $0 \leq \sml{i} \leq \msml{length \: s}$, and raises \sml{Range} otherwise.
+
+\item \sml{\oftp{Seq.cons}{'a -> 'a Seq.seq -> 'a Seq.seq}}\\ If the
+  length of \sml{xs} is \sml{l}, \sml{Seq.cons x xs} evaluates to a
+  sequence of length \sml{l+1} whose first item is \sml{x} and whose
+  remaining \sml{l} items are exactly the sequence \sml{xs}.\\
+  (\textbf{NOTE:} Please do not use \sml{Seq.cons} unless it is specifically
+  suggested. If it is overused, it can lead to a sequential style that is
+  somewhat against the spirit of sequences.)
+
+\item \sml{\oftp{Seq.update}{'a Seq.seq * int * 'a -> 'a
+    Seq.seq}}\\ \sml{Seq.update (s, i, x)} returns a sequence
+  identical to \sml{s} but with the \sml{i}th element (0-indexed) now \sml{x}.
+  Index \sml{i} must satisfy $0 \leq \sml{i} < \sml{length(s)}$.
+
+\item \sml{Seq.toList : 'a seq -> 'a list}\\ \sml{Seq.toList s}
+  returns a list consisting of the elements of \sml{s}, preserving
+  order.  This function is intended primarily for debugging purposes.
+
+\item \sml{Seq.fromList : 'a list -> 'a seq}\\ \sml{Seq.fromList L}
+  returns a sequence consisting of the elements of \sml{L},
+  preserving order.  This function is intended primarily for debugging
+  purposes.
+
+\end{itemize}

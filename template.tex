@@ -1,0 +1,111 @@
+% You should title the file with a .tex extension (hw1.tex, for example)
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+
+\oddsidemargin0cm
+\topmargin-2cm     %I recommend adding these three lines to increase the 
+\textwidth16.5cm   %amount of usable space on the page (and save trees)
+\textheight23.5cm  
+
+\newcommand{\question}[2] {\vspace{.25in} \hrule\vspace{0.5em}
+\noindent{\bf #1: #2} \vspace{0.5em}
+\hrule \vspace{.10in}}
+\renewcommand{\part}[1] {\vspace{.10in} {\bf (#1)}}
+
+\newcommand{\myname}{Write your name here!}
+\newcommand{\myandrew}{write-your-andrew-id-here@andrew.cmu.edu}
+\newcommand{\myhwnum}{homework-number-here}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+ 
+\pagestyle{fancyplain}
+\lhead{\fancyplain{}{\textbf{HW\myhwnum}}}      % Note the different brackets!
+\rhead{\fancyplain{}{\myname\\ \myandrew}}
+\chead{\fancyplain{}{15-150}}
+
+\begin{document}
+
+\medskip                        % Skip a "medium" amount of space
+                                % (latex determines what medium is)
+                                % Also try: \bigskip, \littleskip
+
+\thispagestyle{plain}
+\begin{center}                  % Center the following lines
+{\Large 15-150 Assignment \myhwnum} \\
+\myname \\
+\myandrew \\
+Your recitation section \\
+The date \\
+\end{center}
+
+\question{1}{Mathematical Symbols}
+
+This is an example of an answer to a homework question.  In your
+answer, you may want to use a variety of mathematical symbols:
+
+% this is one way to make a list. Another would be to say
+% \begin{enumerate} and \end{enumerate}, which would give numbers instead
+% of bullets to the items
+\begin{itemize}
+\item Fractions: $\frac{2}{3}$ %don't need curly braces for single chars; could have typed \frac23
+\item Binomial coefficients: $\binom{n}{k} = 10$
+\item Subscripts and superscripts: $t_0$, $t^2$, $t_0^{2/3}$, 
+\item Greek letters: $\alpha$, $\beta$, $\gamma$, $\lambda$, $\Pi$, $\pi$.
+\item Summations: $\sum_{i=1}^n i = \frac{n(n+1)}2$.
+\end{itemize}
+
+You can refer to Leslie Lamport's ``\LaTeX\ User's Guide and
+Reference Manual'' for more useful info on mathematical typesetting
+with \LaTeX.  Pages 42-46 outline many of the useful math symbols
+and functions.
+
+Another good reference for the mathematical symbols of \LaTeX\ is 
+``Inessential LaTeX'' by the MIT SIPB group.  Find it on the Web at
+\verb|http://www.mit.edu/afs/sipb/project/doc/latex/guide.PS|
+
+
+\question{2}{Little Gauss's Formula}
+
+This is another example of a question.  In this case, it's
+a multi-part question.
+
+\part{a} Recall {\em Little Gauss's formula}:
+
+% equations are automatically centered!
+\begin{eqnarray}
+\sum_{i=1}^n i = {\frac{n(n+1)}2}  % as usual, liberal use of curly braces...
+\label{little-gauss}        % labelled so we can refer to this formula by number
+\end{eqnarray}
+
+\part{b} Now, equation \ref{little-gauss} can be proven by induction as
+follows:
+
+\begin{itemize}
+\item {\bf Base case}: $n=1$: $1 = 1(2)/2=1$.
+\item {\bf Inductive hypothesis}: assume the equation holds for $n=2...k$.
+\item {\bf Inductive step}: for $n=k+1$, we have
+\begin{eqnarray*}    % the star suppresses the equation numbers 
+\sum_{i=1}^{k+1} i = (k+1) + \sum_{i=1}^k i
+\end{eqnarray*}
+Using the inductive hypothesis, we can substitute for the second term
+on the righthand side:
+\begin{eqnarray*}
+\sum_{i=1}^{k+1} i &=& (k+1) + k(k+1)/2\\    
+                   &=& {\frac{{2k+2 + k(k+1)}}2}\\
+                   &=& {\frac{{k^2 + 3k + 2}}2}\\
+                   &=& {\frac{(k+1)(k+2)}2}
+\end{eqnarray*}
+% notice \\ to indicate newline and the &=& to line up the equals signs 
+\end{itemize}
+
+Lo and behold! The last line shows that for $n=k+1$, little Gauss'
+formula still holds for $n=k+1$! We've showed that the formula holds
+for $n=1$, and we've shown that if it holds for $n=k$ it must hold for
+$n=k+1$. Therefore, it must hold for all $n$.
+
+\end{document}
+

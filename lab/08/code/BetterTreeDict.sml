@@ -1,0 +1,1 @@
+structure BetterTreeDict = struct end

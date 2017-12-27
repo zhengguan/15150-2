@@ -1,0 +1,1 @@
+structure Matrix = SeqMatrix(Seq)

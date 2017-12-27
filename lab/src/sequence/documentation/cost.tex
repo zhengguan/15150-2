@@ -1,0 +1,284 @@
+\section{Detailed Cost Bounds}
+Intuitively, these sequence operations do the same thing as the
+operations on lists that you are familiar with.  However, they have
+different time complexity than the list functions: First, sequences
+admit constant-time access to elements---\verb|nth| takes constant time.
+Second, sequences have better parallel complexity---many operations,
+\verb|map| act on each element of the sequence in parallel.
+
+For each function, we (1) describe its behavior abstractly and (2) give
+a cost graph.
+
+\subsection*{Length}
+The behavior of \verb|length| is
+\begin{verbatim}
+length <x1 , ... , xn> == n
+\end{verbatim}
+
+The cost graph for \verb|length s| is
+\begin{verbatim}
+.
+|
+.
+\end{verbatim}
+As a consequence, \verb|length| has $O(1)$ work/span.
+
+\subsection*{Nth}
+
+Sequences provide constant-time access to elements.  Abstractly, we
+define the behavior of \verb|nth| as
+\begin{verbatim}
+nth <x0 , ... , xn-1> i == xi if 0 <= i < n
+                              or raises Range if i>=n
+\end{verbatim}
+Here \verb|<x1 , ... , xn>| is \emph{not} SML syntax, but mathematical
+syntax for a sequence value.
+
+The cost graph for \verb|nth i s| is
+\begin{verbatim}
+.
+|
+.
+\end{verbatim}
+As a consequence, \verb|nth| has $O(1)$ work/span.
+
+
+
+\subsection*{Map}
+The the behavior of \verb|map f <x1,...xn>| is
+\begin{verbatim}
+map f <x1 , ... , xn> ==> <f x1,...,f xn>
+\end{verbatim}
+
+Each function application may be evaluated in parallel.  This is
+represented by the cost graph
+\begin{verbatim}
+                 .
+             /   |     \
+            /    |      \
+           f x1  f x2 .... f xn
+            \    |      /
+             \   |   /
+                 .
+\end{verbatim}
+where we write \verb|f x1|, etc. for the cost graphs associated with
+these expressions.
+
+As a consequence, if \verb|f| takes constant time, then \verb|map f| has
+$O(n)$ work and $O(1)$ span.
+
+\subsection*{Reduce}
+
+The behavior of \verb|reduce| is
+\[
+\texttt{reduce} \odot \: b \: \langle x_1,\ldots x_n \rangle \cong x_1 \odot x_2 \odot \ldots \odot x_n
+\]
+That is, \verb|reduce| applied its argument function (which we write
+here as infix $\odot$) between every pair of elements in the sequence.
+
+However, the right-hand side is ambiguous, because we have not
+parenthesized it.  There are two options: First, we could assume the
+function $\odot$ is associative, with unit $b$, in which case these all
+mean the same thing.  However, there are some useful non-associative
+operations (e.g. floating point).  So the second option is to specify a
+particular parenthesization $(x_1 \odot (x_2 \odot \ldots \odot (x_n
+\odot b))\ldots)$ or $(\ldots (x_1 \odot x_2) \odot \ldots \odot x_n)$
+or the balanced tree $((x_1 \odot x_2) \odot (x_3 \odot x_4)) \odot
+\ldots$ (with $b$ filled in at the end if the sequence has odd length).
+Unless we say otherwise, you can assume the balanced tree.
+
+The cost graph for $\texttt{reduce} \odot \: b \: \langle x_1,\ldots x_n \rangle$ is
+\begin{verbatim}
+                      .
+    x1 o x2    x3 o x4  ...
+        \         |
+         \        |
+          \       |
+           \      |
+                  .
+                  o  |
+                  \  |
+                   \ |
+                    \|
+                     o
+                     .
+                     .
+                     .
+\end{verbatim}
+(with the last pair being either \verb|xn-1 o xn| or \verb|xn o b|
+depending on the parity of the length).  That is, it is the graph of the
+balanced parenthesization described above.  Consequently, if $\odot$
+takes constant time (e.g. \verb|op+|) then the graph has size (work)
+$O(n)$ and critical path length (span) $O(\log n)$.  Reduce does not
+have constant span, because later applications of $\odot$ depend on the
+values of earlier ones.
+%%FIXME: notation is a litte strained: o should really have arguments,
+%%but they don't have names
+
+\paragraph{Tabulate}
+The way of introducing a sequence is \emph{tabulate}, which constructs a
+sequence from a function that gives you the element at each position,
+from $0$ up to a specified bound:
+
+\begin{verbatim}
+tabulate f n ==> <v0 , ... , v_(n-1)>
+   if f 0 ==> v0
+      f 1 ==> v1
+      ...
+      f (n-1) ==> v_(n-1)
+\end{verbatim}
+
+The cost graph (and therefore time complexities) for tabulate is analogous to the graph for \verb|map|:
+\begin{verbatim}
+                 .
+             /   |     \
+            /    |      \
+           f 0  f 1 .... f (n - 1)
+            \    |      /
+             \   |   /
+                 .
+\end{verbatim}
+
+%% Exercise: implement \verb|zip| in terms of \verb|tabulate|:
+%% \begin{verbatim}
+%% fun zip (s1,s2) = tabulate (fn i => (nth s1 i , nth s2 i)) (min (length s1 , length s2))
+%% \end{verbatim}
+
+
+Note that with \verb|nth| and \verb|tabulate| you can write very index-y
+array-like code.  Use this sparingly: it's hard to read!  E.g. never
+write
+\begin{verbatim}
+   Seq.tabulate (fn i => ... nth i s ...)
+                (Seq.length s)
+\end{verbatim}
+if the function doesn't otherwise mention \verb|i|: you're
+reimplementing \verb|map| in a hard-to-read way!
+\begin{verbatim}
+   Seq.map (fn x => ... x ...) s
+\end{verbatim}
+
+
+
+\section{Thinking About Cost}
+
+Let's think about the big picture of parallelism.
+Parallelism is relevant to situations where many things can be done at
+once---e.g. using the multiple cores in multi-processor machine, or the
+many machines in a cluster. Overall, the goal of parallel programming is to
+describe computation in such a way that it can make use of this ability to
+do work on multiple processors simultaneously.  At the lowest level, this
+means deciding, at each moment in time, what to do on each processor.  This
+is limited by the data dependencies in a problem or a program.  For
+example, evaluating \verb|(1 + 2) + (3 + 4)| takes three units of work, one
+for each addition, but you cannot do the outer addition until you have done
+the inner two.  So even with three processors, you cannot perform the
+calculation in fewer than two timesteps.  That is, the expression has work
+3 but span 2.
+
+The approach to parallelism that we're advocating in this class is based
+on raising the level of abstraction at which you can think, by
+\emph{separating the specification of what work there is to be done from
+  the schedule that maps it onto processors}.  As much as possible, you,
+the programmer, worry about specifying what work there is to do, and the
+compiler takes care of scheduling it onto processors.  Three things are
+necessary to make this separation of concerns work:
+\begin{enumerate}
+\item The code itself must not bake in a schedule.
+\item You must be able to reason about the \emph{behavior} of your code
+  independently of the schedule.
+\item You must be able to reason about the \emph{time complexity} of
+  your code independently of the schedule.
+\end{enumerate}
+
+
+Our central tool for avoiding baking in a schedule is \emph{functional
+  programming}.  First, we focus on bulk operations on big collections
+which do not specify a particular order in which the operations on each
+element are performed.  For example, today, we will talk about
+\emph{sequences}, which come with an operation
+\verb|map f <x1,x2,...,xn>| that is specified by saying that its value
+is the sequence \verb|<f x1, f x2, ... f xn>|.  This specifies the data
+dependencies (to calculate \verb|map|, you need to calculate \verb|f x1|
+\ldots) without specifying a particular schedule.  You can implement the
+same computation with a loop, saying ``do \verb|f x1|, then do
+\verb|f x2|,\ldots'', but this is inlining a particular schedule into
+the code---which is bad, because it gratuitously throws away
+opportunities for parallelism.  Second, functional programming focuses
+on pure, mathematical functions, which are evaluated by calculation.
+This limits the dependence of one chunk of work on another to what it is
+obvious from the data-flow in the program.  For example, when you
+\verb|map| a function \verb|f| across a sequence, evaluating \verb|f| on
+the first element has no influence on the value of \verb|f| on the
+second element, etc.---this is not the case for imperative programming,
+where one call to \verb|f| might influence another via memory updates.
+It is in general undecidable to take an imperative program and notice
+notice, after the fact, that what you really meant by that loop was a
+bulk operation on a collection, or that this particular piece of code
+really defines a mathematical function.
+
+
+So why are we teaching you this style of parallel programming?  There
+are two reasons: First, even if you have to get into more of the gritty
+details of scheduling to get your code to run fast today, it's good to
+be able to think about problems at a high level first, and then figure
+out the details.  If you're writing some code for an internship this
+summer using a low-level parallelism interface, it can be useful to
+first think about the abstract algorithm---what are the dependencies
+between tasks? what can possibly be done in parallel?---and then figure
+out the details.  You can use parallel functional programming to design
+algorithms, and then translate them down to whatever interface you need.
+Second, it's our thesis that eventually this kind of parallel
+programming will be practical and common: as language implementations
+improve, and computers get more and more cores, this kind of programming
+will become possible and even necessary.  You're going to be writing
+programs for a long time, and we're trying to teach you tools that will
+be useful years down the road.
+
+
+\subsection{Cost Semantics Reminder}
+
+A cost graph is a form of \emph{series-parallel graphs}.  A
+series-parallel graph is a directed graph (we always draw a cost graph
+so that the edges point down the page) with a designated source node (no
+edges in) and sink node (no edges out), formed by two operations called
+sequential and parallel composition.  The particular series-parallel
+graphs we need are of the following form:
+
+\begin{verbatim}
+.     .        G1         .
+      |         |        / \
+      .        G2       G1 G2
+                         \./
+\end{verbatim}
+
+
+The first is a graph with one node; the second is a graph with two nodes
+with one edge between them.  The third, \emph{sequential combination},
+is the graph formed by putting an edge from the sink of \verb|G1| to the
+source of \verb|G2|.  The fourth, \emph{parallel combination}, is the
+graph formed by adding a new source and sink, and adding edges from the
+source to the source of each of \verb|G1| and \verb|G2|, and from the
+sinks of each of them to the new sink.  We also need an $n$-ary parallel
+combination of graphs \verb|G1 ... Gn|
+\begin{verbatim}
+              .
+             /|   \
+            / |      \
+           G1 G2 .... Gn
+            \  |      /
+             \ |   /
+               .
+\end{verbatim}
+
+The \emph{work} of a cost graph is the number of nodes.  The \emph{span}
+is the length of the longest path, which we may refer to as the
+\emph{critical path}, or the \emph{diameter}.  We will associate a cost
+graph with each closed program, and define the work/span of a program to
+be the work/span of its cost graph.
+
+These graphs model \emph{fork-join parallelism}: a computation forks
+into various subcomputations that are run in parallel, but these come
+back together at a well-defined joint point.  These forks and joins are
+well-nested, in the sense that the join associated with a later fork
+precedes the join associated with an earlier fork.
